@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "order": {
+      "title": "Order",
+      "description": "Represents a purchase transaction for a vault asset.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The unique identifier of the user." },
+        "productId": { "type": "string", "description": "The ID of the product purchased." },
+        "status": { "type": "string", "enum": ["PENDING", "PAID", "FULFILLED", "FAILED"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "wisePaymentId": { "type": "string" },
+        "vaultUrl": { "type": "string", "description": "Signed URL for the asset." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "status", "amount"]
+    },
+    "lead": {
+      "title": "Lead",
+      "description": "Information for potential customers captured via growth agents.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "source": { "type": "string", "enum": ["Puppeteer", "Landing", "Journal"] },
+        "intentScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "source"]
+    },
+    "customer": {
+      "title": "Customer",
+      "description": "Official customer record for CRM and support.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "orderCount": { "type": "number" },
+        "totalSpent": { "type": "number" },
+        "lastActive": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email"]
+    },
+    "blogPost": {
+      "title": "Blog Post",
+      "description": "A published article in the Architech Journal.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "level": { "type": "string" },
+        "author": { "type": "string" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content"]
+    },
+    "asset": {
+      "title": "Vault Asset",
+      "description": "A digital product available in the shop.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "price"]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Collection of orders."
+    },
+    "/leads/{leadId}": {
+      "schema": "lead",
+      "description": "CRM leads."
+    },
+    "/customers/{customerId}": {
+      "schema": "customer",
+      "description": "Customer profiles."
+    },
+    "/blog/{postId}": {
+      "schema": "blogPost",
+      "description": "Journal articles."
+    },
+    "/assets/{assetId}": {
+      "schema": "asset",
+      "description": "Catalog of digital products."
+    }
+  }
+}

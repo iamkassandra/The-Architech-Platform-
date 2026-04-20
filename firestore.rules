@@ -1,0 +1,125 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: orders
+// Fields:
+//   - userId: string (required) - Owner UID
+//   - productId: string (required) - Asset ID
+//   - status: string (required) - PENDING, PAID, FULFILLED, FAILED
+//   - amount: number (required) - Price
+//   - currency: string (required) - Currency code
+//   - wisePaymentId: string - External reference
+//   - vaultUrl: string - Temporary signed URL (Server-Injected)
+//   - createdAt: timestamp (required)
+//   - updatedAt: timestamp (required)
+//
+// Collection: leads
+// Fields:
+//   - email: string (required) - Lead email
+//   - source: string (required) - Puppeteer, Landing, Journal
+//   - intentScore: number - 0 to 1 scale
+//   - createdAt: timestamp (required)
+//
+// Collection: customers
+// Fields:
+//   - email: string (required)
+//   - orderCount: number
+//   - totalSpent: number
+//   - lastActive: timestamp
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "theaucklandassistant@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isRecent(time) {
+      return time > request.time - duration.value(5, 'm') && time < request.time + duration.value(5, 'm');
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidOrder(data) {
+      return data.productId is string && data.productId.size() > 0 &&
+             data.status in ['PENDING', 'PAID', 'FULFILLED', 'FAILED'] &&
+             data.amount is number && data.amount >= 0 &&
+             data.createdAt is timestamp && data.updatedAt is timestamp;
+    }
+
+    function isValidLead(data) {
+      return isValidEmail(data.email) &&
+             data.source in ['Puppeteer', 'Landing', 'Journal'] &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && 
+                    request.resource.data.userId == request.auth.uid && 
+                    isValidOrder(request.resource.data) &&
+                    isRecent(request.resource.data.createdAt);
+      allow update: if isAdmin(); // Only agents/admins can update order status or inject vaultUrl
+      allow delete: if isAdmin();
+    }
+
+    // Leads Collection
+    match /leads/{leadId} {
+      allow read: if isAdmin();
+      allow create: if true; // Public can submit leads (email signup)
+      allow update, delete: if isAdmin();
+    }
+
+    // Customers Collection
+    match /customers/{customerId} {
+      allow read: if isAuthenticated() && (resource.id == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Blog Collection
+    match /blog/{postId} {
+      allow read: if true; // Intelligence feed is public
+      allow write: if isAdmin();
+    }
+
+    // Assets Collection
+    match /assets/{assetId} {
+      allow read: if true; // Catalog is public
+      allow write: if isAdmin();
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
