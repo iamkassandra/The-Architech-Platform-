@@ -56,7 +56,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white font-mono selection:bg-green selection:text-black overflow-x-hidden brutal-grid">
+    <div className="min-h-screen flex flex-col bg-black text-white font-mono selection:bg-red selection:text-white overflow-x-hidden brutal-grid">
       <Navbar 
         currentRoute={currentRoute} 
         navigate={navigate} 
@@ -76,15 +76,15 @@ const App: React.FC = () => {
             >
               <div className="w-full max-w-lg">
                 <div className="flex justify-between mb-2">
-                  <span className="text-[10px] text-green animate-pulse">DECRYPTING_PROTOCOL_X...</span>
-                  <span className="text-[10px] text-green">HASH_v4.2</span>
+                  <span className="text-[10px] text-red animate-pulse">DECRYPTING_PROTOCOL_X...</span>
+                  <span className="text-[10px] text-red">HASH_v4.2</span>
                 </div>
                 <div className="h-0.5 bg-white/10 w-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="h-full bg-green"
+                    className="h-full bg-red"
                   />
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4">
@@ -117,7 +117,7 @@ const App: React.FC = () => {
       <footer className="bg-black border-t border-white/10 py-24 px-6 relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2 space-y-6">
-            <h2 className="text-4xl font-black tracking-tighter italic">THE ARCHITECH<span className="text-green text-lg not-italic ml-2">v4.0</span></h2>
+            <h2 className="text-4xl font-black tracking-tighter italic">THE ARCHITECH<span className="text-red text-lg not-italic ml-2">v4.0</span></h2>
             <p className="text-white/40 text-sm max-w-sm leading-relaxed">
               AUTONOMOUS INTELLIGENCE ORCHESTRATION. 
               PRODUCTION-GRADE ASSET DEPLOYMENT.
@@ -126,26 +126,26 @@ const App: React.FC = () => {
           </div>
           
           <div className="space-y-6">
-            <span className="block text-[10px] font-black text-green tracking-widest uppercase">Nodes</span>
+            <span className="block text-[10px] font-black text-red tracking-widest uppercase">Nodes</span>
             <div className="flex flex-col space-y-3">
-              <button onClick={() => navigate(AppRoute.HOME)} className="text-xs hover:text-green transition-colors text-left uppercase font-bold">Base</button>
-              <button onClick={() => navigate(AppRoute.BLOG)} className="text-xs hover:text-green transition-colors text-left uppercase font-bold">Archives</button>
-              <button onClick={() => navigate(AppRoute.SHOP)} className="text-xs hover:text-green transition-colors text-left uppercase font-bold">Vault</button>
+              <button onClick={() => navigate(AppRoute.HOME)} className="text-xs hover:text-red transition-colors text-left uppercase font-bold">Base</button>
+              <button onClick={() => navigate(AppRoute.BLOG)} className="text-xs hover:text-red transition-colors text-left uppercase font-bold">Archives</button>
+              <button onClick={() => navigate(AppRoute.SHOP)} className="text-xs hover:text-red transition-colors text-left uppercase font-bold">Vault</button>
             </div>
           </div>
 
           <div className="space-y-6">
-            <span className="block text-[10px] font-black text-green tracking-widest uppercase">System</span>
+            <span className="block text-[10px] font-black text-red tracking-widest uppercase">System</span>
             <div className="flex flex-col space-y-3">
-              <button onClick={() => navigate(AppRoute.ACCOUNT)} className="text-xs hover:text-green transition-colors text-left uppercase font-bold">Identity Node</button>
-              <button onClick={() => navigate(AppRoute.HUB)} className="text-xs hover:text-green transition-colors text-left uppercase font-bold">Orchestrator</button>
+              <button onClick={() => navigate(AppRoute.ACCOUNT)} className="text-xs hover:text-red transition-colors text-left uppercase font-bold">Identity Node</button>
+              <button onClick={() => navigate(AppRoute.HUB)} className="text-xs hover:text-red transition-colors text-left uppercase font-bold">Orchestrator</button>
             </div>
           </div>
         </div>
         
         <div className="max-w-7xl mx-auto mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[8px] font-bold text-white/20 tracking-widest uppercase">
           <span>&copy; {new Date().getFullYear()} ARCHITECH_SYSTEMS.ALL_RIGHTS_RESERVED.</span>
-          <span className="text-green/40">LATENCY: 12ms // STATUS: OPERATIONAL</span>
+          <span className="text-red/40">LATENCY: 12ms // STATUS: OPERATIONAL</span>
         </div>
       </footer>
     </div>

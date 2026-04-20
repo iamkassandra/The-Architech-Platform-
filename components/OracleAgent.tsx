@@ -54,7 +54,7 @@ const OracleAgent: React.FC = () => {
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] p-8 border ${
               m.role === 'user' 
-                ? 'border-green bg-green/5 text-green' 
+                ? 'border-red bg-red/5 text-red' 
                 : 'border-white/10 text-white/60'
             }`}>
                <p className="text-xs font-mono leading-relaxed whitespace-pre-wrap uppercase">{m.text}</p>
@@ -62,14 +62,14 @@ const OracleAgent: React.FC = () => {
           </div>
         ))}
         {isThinking && (
-          <div className="text-[10px] font-black text-green tracking-widest uppercase animate-pulse">
+          <div className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">
             [ Oracle_Processing... ]
           </div>
         )}
       </div>
 
       <div className="p-8 border-t border-white/5 bg-white/2">
-        <div className="flex gap-4 items-end border border-white/10 focus-within:border-green transition-all p-4">
+        <div className="flex gap-4 items-end border border-white/10 focus-within:border-red transition-all p-4">
           <textarea 
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -79,7 +79,7 @@ const OracleAgent: React.FC = () => {
           />
           <button 
             onClick={handleSend}
-            className="w-12 h-12 flex items-center justify-center bg-green text-black hover:bg-white transition-all shadow-xl"
+            className="w-12 h-12 flex items-center justify-center bg-red text-black hover:bg-white transition-all shadow-xl"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           </button>

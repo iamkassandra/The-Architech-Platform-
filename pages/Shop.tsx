@@ -66,7 +66,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
     <div className="pb-24 pt-12">
       <div className="px-6 mb-24 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
         <div className="space-y-6">
-          <span className="text-green text-[10px] font-black tracking-[0.6em] uppercase">Security Level: Clear</span>
+          <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase">Security Level: Clear</span>
           <h1 className="text-8xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8]">The Vault</h1>
         </div>
         <p className="text-white/40 max-w-xs text-xs font-bold leading-relaxed uppercase">
@@ -83,18 +83,18 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
             className="p-12 hover:bg-white/5 transition-all group flex flex-col justify-between"
           >
             <div className="space-y-8">
-               <div className="aspect-square bg-white/5 overflow-hidden border border-white/5 group-hover:border-green/20 transition-colors">
+               <div className="aspect-square bg-white/5 overflow-hidden border border-white/5 group-hover:border-red/20 transition-colors">
                   <img src={product.image} className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt={product.name} />
                </div>
                <div className="flex justify-between items-baseline">
                   <h3 className="text-3xl font-black tracking-tighter uppercase">{product.name}</h3>
-                  <span className="text-green font-bold text-sm">${product.price}</span>
+                  <span className="text-red font-bold text-sm">${product.price}</span>
                </div>
                <p className="text-white/40 text-[10px] uppercase font-bold leading-relaxed">{product.description}</p>
             </div>
             <button 
               onClick={() => setSelectedProduct(product)}
-              className="mt-12 w-full border border-white/20 py-4 hover:bg-green hover:text-black hover:border-green transition-all uppercase font-black tracking-widest text-[10px]"
+              className="mt-12 w-full border border-white/20 py-4 hover:bg-red hover:text-black hover:border-red transition-all uppercase font-black tracking-widest text-[10px]"
             >
               Acquire Protocol
             </button>
@@ -119,7 +119,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
               </button>
 
               <div className="space-y-2">
-                <span className="text-[10px] text-green font-black tracking-widest uppercase">ID_VERIFICATION</span>
+                <span className="text-[10px] text-red font-black tracking-widest uppercase">ID_VERIFICATION</span>
                 <h2 className="text-4xl font-black tracking-tighter uppercase">Initialize Access</h2>
               </div>
 
@@ -130,7 +130,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent border-b border-white/20 py-3 outline-none focus:border-green transition-colors text-sm"
+                    className="w-full bg-transparent border-b border-white/20 py-3 outline-none focus:border-red transition-colors text-sm"
                     placeholder="OPERATOR@ARCHITECH.COM"
                   />
                 </div>
@@ -142,7 +142,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
                   </div>
                   <div className="h-px bg-white/5"></div>
                   <div className="flex justify-between text-xs font-black uppercase">
-                    <span className="text-green">Total</span>
+                    <span className="text-red">Total</span>
                     <span>${selectedProduct.price}.00</span>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
                 <button 
                   disabled={isProcessing}
                   onClick={handleAcquire}
-                  className="w-full bg-green text-black py-4 font-black tracking-[0.2em] uppercase hover:bg-white transition-colors disabled:opacity-50"
+                  className="w-full bg-red text-black py-4 font-black tracking-[0.2em] uppercase hover:bg-white transition-colors disabled:opacity-50"
                 >
                   {isProcessing ? "ENCRYPTING_TRANSACTION..." : "Initialize Order"}
                 </button>

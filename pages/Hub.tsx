@@ -78,7 +78,7 @@ const Hub: React.FC = () => {
       {/* Sidebar Controls */}
       <div className="lg:col-span-3 space-y-12">
         <div className="space-y-6">
-          <span className="text-green text-[10px] font-black tracking-[0.6em] uppercase border-l-2 border-green pl-4">Management Protocol</span>
+          <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase border-l-2 border-red pl-4">Management Protocol</span>
           <h1 className="text-6xl font-black tracking-tighter uppercase leading-[0.8] mb-12">Orchestrator</h1>
         </div>
 
@@ -87,8 +87,8 @@ const Hub: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full group text-left p-8 border hover:border-green transition-all ${
-                activeTab === tab.id ? 'bg-green text-black border-green' : 'border-white/5 text-white/40'
+              className={`w-full group text-left p-8 border hover:border-red transition-all ${
+                activeTab === tab.id ? 'bg-red text-black border-red' : 'border-white/5 text-white/40'
               }`}
             >
               <p className="text-[10px] font-black tracking-[0.4em] mb-1">{tab.label}</p>
@@ -100,15 +100,15 @@ const Hub: React.FC = () => {
         <div className="p-8 border border-white/5 space-y-8">
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/40">
               <span>Cloud_Resources</span>
-              <span className="text-green">Online</span>
+              <span className="text-red">Online</span>
            </div>
            <div className="space-y-4">
               <div className="flex justify-between items-end">
                  <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Compute_Load</span>
-                 <span className="text-xs font-mono text-green">14%</span>
+                 <span className="text-xs font-mono text-red">14%</span>
               </div>
               <div className="w-full h-px bg-white/5 overflow-hidden">
-                 <div className="w-[14%] h-full bg-green shadow-[0_0_10px_#00FF41]"></div>
+                 <div className="w-[14%] h-full bg-red shadow-[0_0_10px_#840000]"></div>
               </div>
            </div>
         </div>
@@ -128,9 +128,9 @@ const Hub: React.FC = () => {
             <header className="p-12 border-b border-white/5 flex justify-between items-center">
                <h2 className="text-2xl font-black tracking-tighter uppercase">NEURAL_COMMAND_CENTER</h2>
                <div className="flex gap-4">
-                  <div className="w-2 h-2 bg-green shadow-[0_0_10px_#00FF41]"></div>
-                  <div className="w-2 h-2 bg-green shadow-[0_0_10px_#00FF41] opacity-40"></div>
-                  <div className="w-2 h-2 bg-green shadow-[0_0_10px_#00FF41] opacity-10"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000]"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000] opacity-40"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000] opacity-10"></div>
                </div>
             </header>
             <div className="flex-1 overflow-hidden">
@@ -147,16 +147,16 @@ const Hub: React.FC = () => {
             </header>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <div className="p-12 border border-white/5 hover:border-green transition-all space-y-8 bg-white/2 cursor-pointer group">
-                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center group-hover:bg-green group-hover:text-black transition-all">
+               <div className="p-12 border border-white/5 hover:border-red transition-all space-y-8 bg-white/2 cursor-pointer group">
+                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center group-hover:bg-red group-hover:text-black transition-all">
                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" /></svg>
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-widest">Editorial Node</h3>
                   <p className="text-[10px] text-white/40 uppercase font-bold leading-relaxed">Publish to the architech journal.</p>
                </div>
                
-               <div className="p-12 border border-white/5 hover:border-green transition-all space-y-8 bg-white/2 cursor-pointer group">
-                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center group-hover:bg-green group-hover:text-black transition-all">
+               <div className="p-12 border border-white/5 hover:border-red transition-all space-y-8 bg-white/2 cursor-pointer group">
+                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center group-hover:bg-red group-hover:text-black transition-all">
                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-widest">Vault Node</h3>
@@ -175,17 +175,17 @@ const Hub: React.FC = () => {
           <div className="p-12 space-y-12">
              <header className="flex justify-between items-center border-b border-white/5 pb-8">
                 <h2 className="text-4xl font-black tracking-tighter uppercase">System Pulse</h2>
-                <span className="text-[10px] font-mono text-green uppercase tracking-widest">[ REAL_TIME_SYNC ]</span>
+                <span className="text-[10px] font-mono text-red uppercase tracking-widest">[ REAL_TIME_SYNC ]</span>
              </header>
              
              <div className="space-y-6">
                 {logs.map(log => (
                   <div key={log.id} className="grid grid-cols-12 gap-8 items-center border border-white/5 p-6 hover:bg-white/5 transition-all font-mono text-[10px]">
                      <div className="col-span-2 text-white/20">[{log.timestamp}]</div>
-                     <div className="col-span-2 text-green uppercase tracking-widest">{log.platform}</div>
+                     <div className="col-span-2 text-red uppercase tracking-widest">{log.platform}</div>
                      <div className="col-span-6 text-white uppercase">{log.action}</div>
                      <div className="col-span-2 text-right">
-                        <span className="text-green opacity-40 uppercase">Synced</span>
+                        <span className="text-red opacity-40 uppercase">Synced</span>
                      </div>
                   </div>
                 ))}
@@ -195,7 +195,7 @@ const Hub: React.FC = () => {
                    <div className="col-span-2">[{new Date().toLocaleTimeString()}]</div>
                    <div className="col-span-2">TRAFFIC</div>
                    <div className="col-span-6 italic uppercase">INBOUND_REQUEST // ASIA-EAST1_NODE</div>
-                   <div className="col-span-2 text-right text-green animate-pulse">LIVE</div>
+                   <div className="col-span-2 text-right text-red animate-pulse">LIVE</div>
                 </div>
              </div>
           </div>

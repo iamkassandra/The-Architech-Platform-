@@ -41,12 +41,12 @@ const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }
            <motion.div 
              initial={{ scale: 0.9, opacity: 0 }}
              animate={{ scale: 1, opacity: 1 }}
-             className="w-24 h-24 bg-green text-black flex items-center justify-center font-black text-4xl"
+             className="w-24 h-24 bg-red text-black flex items-center justify-center font-black text-4xl"
            >
              [+]
            </motion.div>
            <div className="space-y-4">
-              <span className="text-green text-[10px] font-black tracking-[0.6em] uppercase">Status: Finalizing Fulfillment</span>
+              <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase">Status: Finalizing Fulfillment</span>
               <h1 className="text-7xl md:text-[8rem] font-black tracking-tighter uppercase leading-[0.8]">Protocol <br /> Secured.</h1>
            </div>
         </div>
@@ -59,7 +59,7 @@ const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }
               </div>
               <div className="space-y-4 text-right">
                  <span className="text-[10px] text-white/40 font-black uppercase">Security Tier</span>
-                 <p className="text-sm font-bold text-green uppercase">Enterprise_High</p>
+                 <p className="text-sm font-bold text-red uppercase">Enterprise_High</p>
               </div>
            </div>
 
@@ -68,18 +68,18 @@ const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }
            <div className="space-y-8">
               {loading ? (
                 <div className="flex flex-col items-center gap-6 py-12">
-                   <div className="w-12 h-12 border-2 border-green border-t-transparent animate-spin"></div>
-                   <p className="text-[10px] font-black text-green tracking-widest uppercase animate-pulse">Syncing with Wise Bridge...</p>
+                   <div className="w-12 h-12 border-2 border-red border-t-transparent animate-spin"></div>
+                   <p className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">Syncing with Wise Bridge...</p>
                 </div>
               ) : order?.vaultUrl ? (
                 <div className="space-y-8 animate-in fade-in duration-1000">
-                   <div className="bg-white/5 p-8 border border-green/20">
-                      <p className="text-[10px] font-bold text-green uppercase mb-4">Encryption complete. Access granted.</p>
+                   <div className="bg-white/5 p-8 border border-red/20">
+                      <p className="text-[10px] font-bold text-red uppercase mb-4">Encryption complete. Access granted.</p>
                       <h4 className="text-2xl font-black tracking-tight uppercase mb-8">{order.productId.replace(/_/g, ' ')}</h4>
                       <a 
                         href={order.vaultUrl} 
                         download
-                        className="inline-block w-full bg-green text-black py-6 text-center font-black tracking-widest uppercase hover:bg-white transition-colors"
+                        className="inline-block w-full bg-red text-black py-6 text-center font-black tracking-widest uppercase hover:bg-white transition-colors"
                       >
                         Initialize Download
                       </a>
@@ -97,8 +97,8 @@ const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }
         </div>
 
         <div className="flex justify-between items-center text-[10px] font-black tracking-widest uppercase">
-           <button onClick={() => navigate(AppRoute.HOME)} className="hover:text-green transition-colors">[ Return Home ]</button>
-           <button onClick={() => navigate(AppRoute.ACCOUNT)} className="hover:text-green transition-colors">[ Consult Identity ]</button>
+           <button onClick={() => navigate(AppRoute.HOME)} className="hover:text-red transition-colors">[ Return Home ]</button>
+           <button onClick={() => navigate(AppRoute.ACCOUNT)} className="hover:text-red transition-colors">[ Consult Identity ]</button>
         </div>
       </div>
     </div>

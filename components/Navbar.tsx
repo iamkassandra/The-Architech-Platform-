@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
         <div className="flex justify-between h-20 items-center">
           {/* Brand */}
           <div className="flex-shrink-0 cursor-pointer group flex items-center gap-3" onClick={() => navigate(AppRoute.HOME)}>
-            <div className="w-8 h-8 bg-green group-hover:bg-white transition-colors"></div>
+            <div className="w-8 h-8 bg-red group-hover:bg-white transition-colors"></div>
             <span className="text-lg font-black tracking-[0.2em] text-white">THE ARCHITECH</span>
           </div>
           
@@ -35,8 +35,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
               <button
                 key={item.label}
                 onClick={() => navigate(item.route)}
-                className={`text-[10px] font-black tracking-widest transition-all hover:text-green ${
-                  currentRoute === item.route ? 'text-green' : 'text-white/40'
+                className={`text-[10px] font-black tracking-widest transition-all hover:text-red ${
+                  currentRoute === item.route ? 'text-red' : 'text-white/40'
                 }`}
               >
                 {item.label}
@@ -47,21 +47,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
           <div className="flex items-center gap-6">
              <button 
                 onClick={onToggleBot}
-                className={`flex items-center gap-2 px-4 py-2 border ${isBotOpen ? 'bg-green text-black border-green' : 'border-white/10 text-white/40 hover:text-white hover:border-white/40 transition-all'}`}
+                className={`flex items-center gap-2 px-4 py-2 border ${isBotOpen ? 'bg-red text-black border-red' : 'border-white/10 text-white/40 hover:text-white hover:border-white/40 transition-all'}`}
              >
-                <div className={`w-2 h-2 rounded-full ${isBotOpen ? 'bg-black animate-pulse' : 'bg-green'}`}></div>
+                <div className={`w-2 h-2 rounded-full ${isBotOpen ? 'bg-black animate-pulse' : 'bg-red'}`}></div>
                 <span className="text-[10px] font-black tracking-widest uppercase">Consult Agent</span>
              </button>
 
              <button 
                 onClick={() => navigate(AppRoute.SHOP)}
-                className="hidden md:block bg-white text-black px-6 py-2 text-[10px] font-black tracking-widest hover:bg-green transition-all uppercase"
+                className="hidden md:block bg-white text-black px-6 py-2 text-[10px] font-black tracking-widest hover:bg-red transition-all uppercase"
              >
                 Access Vault
              </button>
 
              <div className="lg:hidden">
-              <button onClick={() => setIsOpen(!isOpen)} className="text-white p-2 border border-white/10 hover:border-green transition-colors">
+              <button onClick={() => setIsOpen(!isOpen)} className="text-white p-2 border border-white/10 hover:border-red transition-colors">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {isOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />}
                 </svg>
@@ -78,14 +78,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
             <button
               key={item.label}
               onClick={() => { navigate(item.route); setIsOpen(false); }}
-              className={`block w-full text-left text-2xl font-black tracking-tighter uppercase ${currentRoute === item.route ? 'text-green' : 'text-white/40'}`}
+              className={`block w-full text-left text-2xl font-black tracking-tighter uppercase ${currentRoute === item.route ? 'text-red' : 'text-white/40'}`}
             >
               {item.label}
             </button>
           ))}
           <button 
             onClick={() => { navigate(AppRoute.SHOP); setIsOpen(false); }}
-            className="w-full bg-green text-black py-4 font-black tracking-widest uppercase text-[10px]"
+            className="w-full bg-red text-black py-4 font-black tracking-widest uppercase text-[10px]"
           >
             Access Vault
           </button>

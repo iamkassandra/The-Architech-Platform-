@@ -15,14 +15,14 @@ const Account: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) =>
     <div className="max-w-7xl mx-auto px-6 py-24">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-16 mb-32">
         <div className="space-y-6">
-          <span className="text-green text-[10px] font-black tracking-[0.6em] uppercase">Status: Terminal Active</span>
+          <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase">Status: Terminal Active</span>
           <h1 className="text-8xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8]">Identity <br /> Node</h1>
         </div>
         <div className="text-right space-y-4">
            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Operator Node: {orderId ? orderId.substring(0, 8) : 'ANONYMOUS'}</p>
            <button 
             onClick={() => { localStorage.removeItem('ARCHITECH_ORDER_ID'); window.location.reload(); }} 
-            className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-green transition-all"
+            className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-red transition-all"
            >
              [ PURGE_IDENTITY ]
            </button>
@@ -43,22 +43,22 @@ const Account: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) =>
               </p>
               <button 
                 onClick={() => navigate(AppRoute.SHOP)} 
-                className="bg-green text-black px-12 py-5 text-[10px] font-black tracking-widest uppercase hover:bg-white transition-all shadow-2xl"
+                className="bg-red text-black px-12 py-5 text-[10px] font-black tracking-widest uppercase hover:bg-white transition-all shadow-2xl"
               >
                 Access The Vault
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <div className="p-8 border border-green/20 bg-green/5 space-y-6">
+               <div className="p-8 border border-red/20 bg-red/5 space-y-6">
                   <div className="flex justify-between items-start">
-                     <span className="text-[10px] font-bold text-green uppercase tracking-widest">Active_Node</span>
+                     <span className="text-[10px] font-bold text-red uppercase tracking-widest">Active_Node</span>
                      <span className="text-xs font-mono opacity-40">#01</span>
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-tighter">Acquired Intelligence</h3>
                   <button 
                     onClick={() => navigate(AppRoute.SUCCESS)}
-                    className="w-full bg-green/10 border border-green/20 text-green py-3 text-[10px] font-black uppercase hover:bg-green hover:text-black"
+                    className="w-full bg-red/10 border border-red/20 text-red py-3 text-[10px] font-black uppercase hover:bg-red hover:text-black"
                   >
                     Enter Vault Access
                   </button>

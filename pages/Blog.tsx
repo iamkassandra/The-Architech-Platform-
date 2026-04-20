@@ -53,8 +53,8 @@ const Blog: React.FC = () => {
   if (loading) {
      return (
         <div className="pt-48 flex flex-col items-center justify-center gap-6">
-           <div className="w-12 h-12 border-2 border-green border-t-transparent animate-spin"></div>
-           <p className="text-[10px] font-black text-green tracking-widest uppercase animate-pulse">Initializing Intelligence Database...</p>
+           <div className="w-12 h-12 border-2 border-red border-t-transparent animate-spin"></div>
+           <p className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">Initializing Intelligence Database...</p>
         </div>
      );
   }
@@ -64,7 +64,7 @@ const Blog: React.FC = () => {
       <div className="max-w-4xl mx-auto px-6 py-24">
         <button 
           onClick={() => setActivePost(null)} 
-          className="mb-12 text-[10px] font-black tracking-widest text-green border border-green px-6 py-2 hover:bg-green hover:text-black transition-all"
+          className="mb-12 text-[10px] font-black tracking-widest text-red border border-red px-6 py-2 hover:bg-red hover:text-black transition-all"
         >
           [ BACK_TO_JOURNAL ]
         </button>
@@ -76,16 +76,16 @@ const Blog: React.FC = () => {
               <div className="w-1 h-px bg-white/20"></div>
               <span>{activePost.category}</span>
               <div className="w-1 h-px bg-white/20"></div>
-              <span className="text-green">{activePost.level}</span>
+              <span className="text-red">{activePost.level}</span>
             </div>
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase">{activePost.title}</h1>
           </header>
 
-          <div className="bg-white/5 p-12 border-l-4 border-green text-xl md:text-2xl font-bold leading-relaxed uppercase opacity-80 italic">
+          <div className="bg-white/5 p-12 border-l-4 border-red text-xl md:text-2xl font-bold leading-relaxed uppercase opacity-80 italic">
              "{activePost.excerpt}"
           </div>
 
-          <div className="prose prose-invert prose-green max-w-none font-mono text-sm leading-relaxed opacity-60">
+          <div className="prose prose-invert prose-red max-w-none font-mono text-sm leading-relaxed opacity-60">
              <p>THE CONVERGENCE OF GENERATIVE MODELS AND LOW-LATENCY INFERENCE IS CREATING A NEW PARADIGM FOR DIGITAL COMMERCE. WHAT WE ARE SEEING IS NOT JUST A REPLACEMENT FOR OLD TOOLS, BUT THE BIRTH OF COMPLETELY AUTONOMOUS BUSINESS UNITS.</p>
              <p>STRATEGIC POSITIONING REQUIRES MORE THAN JUST AN API KEY; IT REQUIRES A PROPRIETARY DATASET AND A UNIQUELY FINE-TUNED USER EXPERIENCE THAT LIVES AT THE EDGE OF WHAT IS POSSIBLE.</p>
              <p>IN THE NEXT 12 MONTHS, THE "THEORY OF THE FIRM" WILL BE REWRITTEN. THE ARCHITECH IS HERE TO ENABLE THAT TRANSFORMATION.</p>
@@ -101,7 +101,7 @@ const Blog: React.FC = () => {
     <div className="max-w-7xl mx-auto px-6 py-24">
       <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-32">
         <div className="space-y-6">
-          <span className="text-green text-[10px] font-black tracking-[0.6em] uppercase uppercase border-l-2 border-green pl-4">Protocol: Editorial</span>
+          <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase uppercase border-l-2 border-red pl-4">Protocol: Editorial</span>
           <h1 className="text-8xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8]">The Journal</h1>
         </div>
         <p className="text-white/40 max-w-xs text-xs font-bold leading-relaxed uppercase">
@@ -118,13 +118,13 @@ const Blog: React.FC = () => {
             className="group grid grid-cols-1 md:grid-cols-12 gap-12 py-16 hover:bg-white/5 transition-all cursor-pointer px-6"
             onClick={() => setActivePost(post)}
           >
-            <div className="md:col-span-1 text-2xl font-black text-white/20 group-hover:text-green transition-colors">
+            <div className="md:col-span-1 text-2xl font-black text-white/20 group-hover:text-red transition-colors">
                0{post.id}
             </div>
             <div className="md:col-span-8 space-y-6">
-               <div className="flex items-center gap-6 text-[10px] font-black tracking-widest text-green uppercase">
+               <div className="flex items-center gap-6 text-[10px] font-black tracking-widest text-red uppercase">
                   <span>{post.category}</span>
-                  <div className="w-1 h-px bg-green/40"></div>
+                  <div className="w-1 h-px bg-red/40"></div>
                   <span>{post.level}</span>
                </div>
                <h3 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">{post.title}</h3>
@@ -135,7 +135,7 @@ const Blog: React.FC = () => {
                <button 
                 disabled={audioLoading}
                 onClick={(e) => { e.stopPropagation(); handlePlayExcerpt(post.excerpt); }}
-                className={`w-12 h-12 border border-white/10 flex items-center justify-center hover:bg-green hover:text-black hover:border-green transition-all ${audioLoading ? 'animate-pulse' : ''}`}
+                className={`w-12 h-12 border border-white/10 flex items-center justify-center hover:bg-red hover:text-black hover:border-red transition-all ${audioLoading ? 'animate-pulse' : ''}`}
                >
                  {audioLoading ? (
                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>

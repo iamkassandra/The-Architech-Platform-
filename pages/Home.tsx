@@ -22,7 +22,7 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
             animate={{ opacity: 1, x: 0 }}
             className="mb-12"
           >
-            <span className="text-[10px] font-black text-green tracking-[0.6em] border-l-2 border-green pl-4 uppercase">
+            <span className="text-[10px] font-black text-red tracking-[0.6em] border-l-2 border-red pl-4 uppercase">
               STATUS: OPERATIONAL // V4.0.0
             </span>
           </motion.div>
@@ -39,7 +39,7 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
             <div className="flex flex-col md:flex-row gap-4">
               <button 
                 onClick={() => navigate(AppRoute.SHOP)}
-                className="bg-green text-black px-12 py-5 text-sm font-black tracking-widest uppercase hover:bg-white transition-colors"
+                className="bg-red text-black px-12 py-5 text-sm font-black tracking-widest uppercase hover:bg-white transition-colors"
               >
                 Enter The Vault
               </button>
@@ -69,11 +69,11 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
             className="group p-12 border-r border-white/5 last:border-r-0 hover:bg-white/5 transition-all cursor-pointer relative overflow-hidden"
             onClick={() => navigate(AppRoute.SHOP)}
           >
-            <span className="text-6xl font-black text-white/10 group-hover:text-green/20 transition-colors absolute top-12 right-12">
+            <span className="text-6xl font-black text-white/10 group-hover:text-red/20 transition-colors absolute top-12 right-12">
               {product.id}
             </span>
             <div className="space-y-8 relative z-10">
-              <span className="text-[10px] text-green font-bold tracking-widest">{product.cat}</span>
+              <span className="text-[10px] text-red font-bold tracking-widest">{product.cat}</span>
               <h3 className="text-4xl font-black tracking-tighter leading-none uppercase">{product.title}</h3>
               <div className="pt-12 flex justify-between items-center">
                 <span className="text-2xl font-light">${product.price}</span>
