@@ -1,7 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppRoute, DigitalProduct } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandIcon from '../components/BrandIcon';
+import Meta from '../components/Meta';
+import { useAuth } from '../AuthContext';
+import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from '../services/firebase';
 
 export const PRODUCTS: DigitalProduct[] = [
   { 
@@ -34,9 +38,46 @@ export const PRODUCTS: DigitalProduct[] = [
 ];
 
 const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) => {
+  const { user } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<DigitalProduct | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(user?.email || '');
+  const [wishlist, setWishlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchWishlist = async () => {
+        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceType', '==', 'product'));
+        const snapshot = await getDocs(q);
+        setWishlist(snapshot.docs.map(doc => doc.data().resourceId));
+      };
+      fetchWishlist();
+    }
+  }, [user]);
+
+  const handleToggleWishlist = async (product: DigitalProduct) => {
+    if (!user) return alert("Identity verification required.");
+    
+    if (wishlist.includes(product.id)) {
+      try {
+        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceId', '==', product.id));
+        const snapshot = await getDocs(q);
+        snapshot.forEach(async (d) => await deleteDoc(d.ref));
+        setWishlist(prev => prev.filter(id => id !== product.id));
+      } catch (err) { console.error(err); }
+    } else {
+      try {
+        await addDoc(collection(db, 'reading_lists'), {
+          userId: user.uid,
+          resourceId: product.id,
+          resourceType: 'product',
+          resourceTitle: product.name,
+          savedAt: serverTimestamp()
+        });
+        setWishlist(prev => [...prev, product.id]);
+      } catch (err) { console.error(err); }
+    }
+  };
 
   const handleAcquire = async () => {
     if (!email) return alert("Identification required.");
@@ -64,6 +105,10 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
 
   return (
     <div className="pb-24 pt-12">
+      <Meta 
+        title="THE VAULT | Enterprise Asset Node"
+        description="Exclusive digital assets and systems for the next generation of AI-driven business."
+      />
       <div className="px-6 mb-24 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
         <div className="space-y-6">
           <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase">Security Level: Clear</span>
@@ -88,7 +133,15 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
                </div>
                <div className="flex justify-between items-baseline">
                   <h3 className="text-3xl font-black tracking-tighter uppercase">{product.name}</h3>
-                  <span className="text-red font-bold text-sm">${product.price}</span>
+                   <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => handleToggleWishlist(product)}
+                        className={`text-[10px] uppercase font-black tracking-widest ${wishlist.includes(product.id) ? 'text-red' : 'text-white/20 hover:text-white'} transition-colors`}
+                      >
+                         {wishlist.includes(product.id) ? '[ QUEUED ]' : '[ QUEUE ]'}
+                      </button>
+                      <span className="text-red font-bold text-sm">${product.price}</span>
+                   </div>
                </div>
                <p className="text-white/40 text-[10px] uppercase font-bold leading-relaxed">{product.description}</p>
             </div>
@@ -118,9 +171,12 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
                 [ESC]
               </button>
 
-              <div className="space-y-2">
-                <span className="text-[10px] text-red font-black tracking-widest uppercase">ID_VERIFICATION</span>
-                <h2 className="text-4xl font-black tracking-tighter uppercase">Initialize Access</h2>
+              <div className="flex items-center gap-6 mb-8">
+                 <BrandIcon className="w-12 h-12" />
+                 <div className="space-y-1">
+                   <span className="text-[10px] text-red font-black tracking-widest uppercase">ID_VERIFICATION</span>
+                   <h2 className="text-4xl font-black tracking-tighter uppercase leading-none">Initialize</h2>
+                 </div>
               </div>
 
               <div className="space-y-6">

@@ -4,8 +4,8 @@
 @theme {
   --font-mono: "Noto Sans Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
-  --color-black: #050505;
-  --color-red: #840000;
+  --color-black: #000000;
+  --color-red: #630A1F;
   --color-white: #FFFFFF;
 
   --animate-marquee: marquee 30s linear infinite;

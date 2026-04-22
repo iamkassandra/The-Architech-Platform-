@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as gemini from '../services/geminiService';
 import { Chat } from '@google/genai';
+import BrandIcon from './BrandIcon';
 
 interface Message {
   role: 'user' | 'agent';
@@ -51,7 +52,8 @@ const OracleAgent: React.FC = () => {
     <div className="flex flex-col h-full border border-white/5 bg-black">
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-12 space-y-10 scrollbar-hide">
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex items-start gap-4 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+            {m.role === 'agent' && <BrandIcon className="w-10 h-10 flex-shrink-0 mt-1" />}
             <div className={`max-w-[85%] p-8 border ${
               m.role === 'user' 
                 ? 'border-red bg-red/5 text-red' 
@@ -62,8 +64,11 @@ const OracleAgent: React.FC = () => {
           </div>
         ))}
         {isThinking && (
-          <div className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">
-            [ Oracle_Processing... ]
+          <div className="flex items-center gap-4">
+            <BrandIcon className="w-10 h-10 animate-pulse" />
+            <div className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">
+              [ Oracle_Processing... ]
+            </div>
           </div>
         )}
       </div>

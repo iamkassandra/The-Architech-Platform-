@@ -7,6 +7,12 @@ import { fileURLToPath } from "url";
 import { Storage } from "@google-cloud/storage";
 import admin from "firebase-admin";
 import axios from "axios";
+import Stripe from "stripe";
+import { managePlatform } from "./services/adminAgentService.js";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2025-01-27.acacia" as any,
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,79 +31,130 @@ async function startServer() {
   app.use(express.json());
   app.use(cookieParser());
 
-  // THE MERCHANT: Discreet Order Bridge
-  app.post("/api/orders/create", async (req, res) => {
+  // THE MERCHANT: Stripe Stripe Checkout Bridge
+  app.post("/api/checkout/create-session", async (req, res) => {
     try {
-      const { productId, email, userId } = req.body;
+      const { productId, productName, price, email, userId } = req.body;
       
-      // 1. Create PENDING order
-      const orderRef = await db.collection("orders").add({
-        userId: userId || "anonymous",
-        email,
-        productId,
-        status: "PENDING",
-        amount: 49.00, // Fixed enterprise rate for demo
-        currency: "USD",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        customer_email: email,
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: productName,
+                description: `Digital License for ${productName}`,
+              },
+              unit_amount: Math.round(price * 100),
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/shop`,
+        metadata: {
+          productId,
+          userId: userId || "anonymous",
+          email
+        },
       });
 
-      // 2. Mock Wise Bridge (Discreet)
-      // In production, this would call Wise API to create a quote and payment link
-      // For now, return a simulated payment entry point
-      res.json({ 
-        orderId: orderRef.id, 
-        paymentUrl: `https://wise.com/pay/simulated-${orderRef.id}`,
-        status: "PENDING"
-      });
+      res.json({ id: session.id, url: session.url });
     } catch (error) {
-      console.error("Merchant failure:", error);
-      res.status(500).json({ error: "Orchestration failure" });
+      console.error("Stripe failure:", error);
+      res.status(500).json({ error: "Finance orchestration failure" });
     }
   });
 
-  // THE CONCIERGE: Fulfillment Webhook
-  app.post("/api/webhooks/payment", async (req, res) => {
+  // THE AUDITOR: Stripe Webhook
+  app.post("/api/webhooks/stripe", express.raw({type: 'application/json'}), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
     try {
-      const { orderId, secret } = req.body;
+      event = stripe.webhooks.constructEvent(req.body, sig || "", process.env.STRIPE_WEBHOOK_SECRET || "");
+    } catch (err: any) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const { productId, userId, email } = session.metadata || {};
+
+      // 1. Record Purchase
+      await db.collection("purchases").add({
+        userId,
+        email,
+        productId,
+        amount: session.amount_total ? session.amount_total / 100 : 0,
+        status: "completed",
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      // 2. Fulfillment logic (Simulated Email/Download sync)
+      await db.collection("fulfillment_logs").add({
+        userId,
+        email,
+        productId,
+        type: "EMAIL_DISPATCHED",
+        message: `Order copy and access keys transmitted to ${email}`,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    res.json({received: true});
+  });
+
+  // THE DIAGNOSTIC: Systems Health Check
+  app.get("/api/admin/diagnostics", async (req, res) => {
+    res.json({
+      stripe: !!process.env.STRIPE_SECRET_KEY,
+      stripeWebhook: !!process.env.STRIPE_WEBHOOK_SECRET,
+      gemini: !!process.env.GEMINI_API_KEY,
+      nodeEnv: process.env.NODE_ENV || 'development'
+    });
+  });
+
+  // THE ADMIN AGENT: Intelligence Node
+  app.post("/api/admin/agent/command", async (req, res) => {
+    try {
+      const { command, userId } = req.body;
       
-      // Security check (simulated)
-      if (secret !== process.env.WISE_WEBHOOK_SECRET && process.env.NODE_ENV === "production") {
-        return res.status(401).send("Unauthorized");
-      }
+      // Verification: Check if user is admin
+      const adminDoc = await db.collection("admins").doc(userId).get();
+      if (!adminDoc.exists) return res.status(403).json({ error: "Access Denied" });
 
-      const orderRef = db.collection("orders").doc(orderId);
-      const orderDoc = await orderRef.get();
-
-      if (!orderDoc.exists) return res.status(404).send("Order not found");
-
-      // 3. Flip status to PAID
-      await orderRef.update({ 
-        status: "PAID",
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      // Record standard command
+      const commandRef = await db.collection("admin_commands").add({
+        userId,
+        command,
+        status: "executing",
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
       });
 
-      // 4. Generate V4 Signed URL (valid for 60 mins)
-      const bucketName = "architech-vault-storage";
-      const fileName = `vault/${orderDoc.data()?.productId}.zip`;
-      
-      const [url] = await storage.bucket(bucketName).file(fileName).getSignedUrl({
-        version: "v4",
-        action: "read",
-        expires: Date.now() + 60 * 60 * 1000, // 60 minutes
-      });
+      // FIRE MISSION: Execute intelligence orchestration
+      managePlatform(command, userId)
+        .then(async (response) => {
+          await commandRef.update({
+            response,
+            status: "completed",
+            completedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        })
+        .catch(async (err) => {
+          await commandRef.update({
+            response: `ORCHESTRATION_FAILURE: ${err.message}`,
+            status: "failed",
+            completedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        });
 
-      // 5. Finalize Fulfillment
-      await orderRef.update({
-        status: "FULFILLED",
-        vaultUrl: url,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      res.status(200).send("Fulfillment complete");
+      res.json({ commandId: commandRef.id, status: "Orchestration Initialized" });
     } catch (error) {
-      console.error("Concierge failure:", error);
-      res.status(500).send("Fulfillment failed");
+      res.status(500).json({ error: "Agent synchronization failure" });
     }
   });
 

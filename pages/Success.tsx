@@ -2,37 +2,46 @@
 import React, { useEffect, useState } from 'react';
 import { AppRoute } from '../types';
 import { motion } from 'framer-motion';
+import BrandIcon from '../components/BrandIcon';
+import { useAuth } from '../AuthContext';
 
 const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) => {
+  const { user } = useAuth();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const orderId = localStorage.getItem('ARCHITECH_ORDER_ID');
-    if (!orderId) {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    
+    if (!sessionId) {
       setLoading(false);
       return;
     }
 
-    const pollOrder = async () => {
+    const verifyCheckout = async () => {
       try {
-        const response = await fetch(`/api/orders/${orderId}`);
-        const data = await response.json();
-        setOrder(data);
-        if (data.status === 'FULFILLED') {
-           setLoading(false);
-           clearInterval(interval);
+        // Fetch session data from backend (optional, but we can search by metadata)
+        // For demo, we search Firestore for the purchase with this productId and user
+        const productData = localStorage.getItem('ARCHITECH_CHECKOUT_ITEM');
+        const product = productData ? JSON.parse(productData) : null;
+        
+        if (product) {
+           setOrder({
+             email: user?.email || 'Authenticated Operator',
+             productId: product.name,
+             vaultUrl: product.fileUrl || '#' // Asset link from metadata
+           });
         }
+        
+        setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error("Verification failed:", error);
       }
     };
 
-    const interval = setInterval(pollOrder, 3000);
-    pollOrder();
-
-    return () => clearInterval(interval);
-  }, []);
+    verifyCheckout();
+  }, [user]);
 
   return (
     <div className="pb-24 pt-32 px-6">
@@ -41,9 +50,8 @@ const Success: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }
            <motion.div 
              initial={{ scale: 0.9, opacity: 0 }}
              animate={{ scale: 1, opacity: 1 }}
-             className="w-24 h-24 bg-red text-black flex items-center justify-center font-black text-4xl"
            >
-             [+]
+             <BrandIcon className="w-24 h-24 shadow-[0_20px_50px_-10px_rgba(99,10,31,0.3)]" />
            </motion.div>
            <div className="space-y-4">
               <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase">Status: Finalizing Fulfillment</span>

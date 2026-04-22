@@ -1,17 +1,28 @@
 
 import React, { useState } from 'react';
-import { subscribeEmail } from '../services/storageService';
+import { db, collection, addDoc, serverTimestamp } from '../services/firebase';
 
 const EmailSignup: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    subscribeEmail(email);
-    setStatus('success');
-    setEmail('');
+    
+    setStatus('loading');
+    try {
+      await addDoc(collection(db, 'newsletter'), {
+        email: email.toLowerCase(),
+        subscribedAt: serverTimestamp(),
+        source: 'homepage_footer'
+      });
+      setStatus('success');
+      setEmail('');
+    } catch (error) {
+      console.error("Newsletter sync failure:", error);
+      setStatus('error');
+    }
   };
 
   return (
@@ -37,12 +48,17 @@ const EmailSignup: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 px-8 py-5 rounded-2xl bg-neutral-50 border border-neutral-100 focus:border-black focus:outline-none transition-all text-xs font-black tracking-widest uppercase"
             />
-            <button type="submit" className="px-12 py-5 bg-black text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-neutral-800 transition-all shadow-xl">
-              Authorize
+            <button 
+              type="submit" 
+              disabled={status === 'loading'}
+              className="px-12 py-5 bg-[#630A1F] text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-black transition-all shadow-xl disabled:opacity-50"
+            >
+              {status === 'loading' ? 'Syncing...' : 'Authorize'}
             </button>
           </form>
         )}
-        <p className="text-[9px] font-bold text-neutral-300 uppercase tracking-widest">End-to-End Encrypted Intelligence Transmission</p>
+        {status === 'error' && <p className="text-[10px] text-red mt-4 uppercase font-black">Transmission Interrupted. Retry Protocol.</p>}
+        <p className="text-[9px] font-bold text-neutral-300 uppercase tracking-widest mt-8">End-to-End Encrypted Intelligence Transmission</p>
       </div>
     </section>
   );

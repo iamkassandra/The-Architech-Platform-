@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as gemini from '../services/geminiService';
 import { Chat } from "@google/genai";
+import BrandIcon from './BrandIcon';
 
 interface ArchitechBotProps {
   isOpen: boolean;
@@ -67,9 +68,12 @@ const ArchitechBot: React.FC<ArchitechBotProps> = ({ isOpen, onClose }) => {
         
         {/* Header - Restored Wording, Blue Dot Removed */}
         <div className="p-6 flex justify-between items-center border-b border-neutral-50 bg-white">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black tracking-[0.4em] text-black uppercase">OFFICE OF ARCHITECH</span>
-            <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest">DIRECT LINK STABLE</span>
+          <div className="flex items-center gap-3">
+            <BrandIcon className="w-10 h-10" />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black tracking-[0.4em] text-black uppercase">OFFICE OF ARCHITECH</span>
+              <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest">DIRECT LINK STABLE</span>
+            </div>
           </div>
           <button 
             onClick={onClose} 
@@ -84,8 +88,9 @@ const ArchitechBot: React.FC<ArchitechBotProps> = ({ isOpen, onClose }) => {
         {/* Intelligence Stream */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6 space-y-8 scrollbar-hide bg-white">
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-500`}>
-              <div className={`max-w-[90%] p-5 rounded-[1.5rem] ${
+            <div key={i} className={`flex items-start gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'} animate-in fade-in slide-in-from-bottom-1 duration-500`}>
+              {m.role === 'architech' && <BrandIcon className="w-8 h-8 flex-shrink-0 mt-2" />}
+              <div className={`max-w-[85%] p-5 rounded-[1.5rem] ${
                 m.role === 'user' 
                 ? 'bg-black text-white rounded-tr-none' 
                 : 'bg-neutral-50 text-neutral-800 rounded-tl-none border border-neutral-100'

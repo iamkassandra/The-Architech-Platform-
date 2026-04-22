@@ -9,9 +9,12 @@ import Hub from './pages/Hub';
 import Checkout from './pages/Checkout';
 import Success from './pages/Success';
 import Account from './pages/Account';
+import Admin from './pages/Admin';
 import ArchitechBot from './components/ArchitechBot';
 import EmailSignup from './components/EmailSignup';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandIcon from './components/BrandIcon';
+import { AuthProvider } from './AuthContext';
 
 const App: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(AppRoute.HOME);
@@ -51,12 +54,14 @@ const App: React.FC = () => {
       case AppRoute.CHECKOUT: return <Checkout navigate={navigate} />;
       case AppRoute.SUCCESS: return <Success navigate={navigate} />;
       case AppRoute.ACCOUNT: return <Account navigate={navigate} />;
+      case AppRoute.ADMIN: return <Admin navigate={navigate} />;
       default: return <Home navigate={navigate} />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white font-mono selection:bg-red selection:text-white overflow-x-hidden brutal-grid">
+    <AuthProvider>
+      <div className="min-h-screen flex flex-col bg-black text-white font-mono selection:bg-red selection:text-white overflow-x-hidden brutal-grid">
       <Navbar 
         currentRoute={currentRoute} 
         navigate={navigate} 
@@ -117,7 +122,10 @@ const App: React.FC = () => {
       <footer className="bg-black border-t border-white/10 py-24 px-6 relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2 space-y-6">
-            <h2 className="text-4xl font-black tracking-tighter italic">THE ARCHITECH<span className="text-red text-lg not-italic ml-2">v4.0</span></h2>
+            <div className="flex items-center gap-4">
+              <BrandIcon className="w-12 h-12" />
+              <h2 className="text-4xl font-black tracking-tighter italic">THE ARCHITECH<span className="text-red text-lg not-italic ml-2">v4.0</span></h2>
+            </div>
             <p className="text-white/40 text-sm max-w-sm leading-relaxed">
               AUTONOMOUS INTELLIGENCE ORCHESTRATION. 
               PRODUCTION-GRADE ASSET DEPLOYMENT.
@@ -149,6 +157,7 @@ const App: React.FC = () => {
         </div>
       </footer>
     </div>
+    </AuthProvider>
   );
 };
 

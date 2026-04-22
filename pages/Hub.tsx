@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import OracleAgent from '../components/OracleAgent';
 import { OrchestrationLog } from '../types';
+import BrandIcon from '../components/BrandIcon';
 
 const Hub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'oracle' | 'forge' | 'matrix'>('oracle');
@@ -78,6 +79,7 @@ const Hub: React.FC = () => {
       {/* Sidebar Controls */}
       <div className="lg:col-span-3 space-y-12">
         <div className="space-y-6">
+          <BrandIcon className="w-16 h-16 animate-pulse" />
           <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase border-l-2 border-red pl-4">Management Protocol</span>
           <h1 className="text-6xl font-black tracking-tighter uppercase leading-[0.8] mb-12">Orchestrator</h1>
         </div>
@@ -108,14 +110,14 @@ const Hub: React.FC = () => {
                  <span className="text-xs font-mono text-red">14%</span>
               </div>
               <div className="w-full h-px bg-white/5 overflow-hidden">
-                 <div className="w-[14%] h-full bg-red shadow-[0_0_10px_#840000]"></div>
+                 <div className="w-[14%] h-full bg-red shadow-[0_0_10px_var(--color-red)]"></div>
               </div>
            </div>
         </div>
 
         <button 
            onClick={() => window.location.hash = '#/'}
-           className="w-full py-6 text-[10px] font-black tracking-[0.4em] uppercase border border-red-900 text-red-500 hover:bg-red-500 hover:text-black transition-all"
+           className="w-full py-6 text-[10px] font-black tracking-[0.4em] uppercase border border-red/40 text-red hover:bg-red hover:text-black transition-all"
         >
           [ DISCONNECT_TERMINAL ]
         </button>
@@ -128,9 +130,9 @@ const Hub: React.FC = () => {
             <header className="p-12 border-b border-white/5 flex justify-between items-center">
                <h2 className="text-2xl font-black tracking-tighter uppercase">NEURAL_COMMAND_CENTER</h2>
                <div className="flex gap-4">
-                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000]"></div>
-                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000] opacity-40"></div>
-                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_#840000] opacity-10"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_var(--color-red)]"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_var(--color-red)] opacity-40"></div>
+                  <div className="w-2 h-2 bg-red shadow-[0_0_10px_var(--color-red)] opacity-10"></div>
                </div>
             </header>
             <div className="flex-1 overflow-hidden">

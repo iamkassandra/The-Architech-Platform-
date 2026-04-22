@@ -2,6 +2,8 @@
 import React from 'react';
 import { AppRoute } from '../types';
 import { motion } from 'framer-motion';
+import BrandIcon from '../components/BrandIcon';
+import Meta from '../components/Meta';
 
 const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) => {
   const products = [
@@ -14,14 +16,19 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
 
   return (
     <div className="pb-24">
+      <Meta 
+        title="THE ARCHITECH | Intelligence Orchestration"
+        description="The elite authority on enterprise AI orchestration and digital asset deployment."
+      />
       {/* Hero Section */}
       <section className="px-6 pt-32 pb-48 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="mb-12"
+            className="mb-12 flex items-center gap-6"
           >
+            <BrandIcon className="w-16 h-16 md:w-24 md:h-24 hover:rotate-12 transition-transform duration-700" />
             <span className="text-[10px] font-black text-red tracking-[0.6em] border-l-2 border-red pl-4 uppercase">
               STATUS: OPERATIONAL // V4.0.0
             </span>

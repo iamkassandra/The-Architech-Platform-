@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { AppRoute } from '../types';
+import BrandIcon from './BrandIcon';
 
 interface NavbarProps {
   currentRoute: AppRoute;
@@ -25,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
         <div className="flex justify-between h-20 items-center">
           {/* Brand */}
           <div className="flex-shrink-0 cursor-pointer group flex items-center gap-3" onClick={() => navigate(AppRoute.HOME)}>
-            <div className="w-8 h-8 bg-red group-hover:bg-white transition-colors"></div>
+            <BrandIcon className="w-10 h-10 group-hover:scale-110 transition-transform duration-500" />
             <span className="text-lg font-black tracking-[0.2em] text-white">THE ARCHITECH</span>
           </div>
           

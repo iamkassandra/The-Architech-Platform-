@@ -52,5 +52,6 @@ export enum AppRoute {
   CHECKOUT = '/checkout',
   HUB = '/hub', 
   SUCCESS = '/success',
-  ACCOUNT = '/account'
+  ACCOUNT = '/account',
+  ADMIN = '/admin'
 }

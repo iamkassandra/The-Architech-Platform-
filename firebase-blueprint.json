@@ -1,96 +1,147 @@
 {
   "entities": {
-    "order": {
-      "title": "Order",
-      "description": "Represents a purchase transaction for a vault asset.",
+    "User": {
+      "title": "User Profile",
+      "description": "Enterprise user profile with system metadata",
       "type": "object",
       "properties": {
-        "userId": { "type": "string", "description": "The unique identifier of the user." },
-        "productId": { "type": "string", "description": "The ID of the product purchased." },
-        "status": { "type": "string", "enum": ["PENDING", "PAID", "FULFILLED", "FAILED"] },
-        "amount": { "type": "number" },
-        "currency": { "type": "string" },
-        "wisePaymentId": { "type": "string" },
-        "vaultUrl": { "type": "string", "description": "Signed URL for the asset." },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
       },
-      "required": ["productId", "status", "amount"]
+      "required": ["userId", "email"]
     },
-    "lead": {
-      "title": "Lead",
-      "description": "Information for potential customers captured via growth agents.",
+    "Product": {
+      "title": "Vault Asset",
+      "description": "High-value digital product available in the Vault",
       "type": "object",
       "properties": {
-        "email": { "type": "string", "format": "email" },
-        "source": { "type": "string", "enum": ["Puppeteer", "Landing", "Journal"] },
-        "intentScore": { "type": "number" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "isActive": { "type": "boolean" }
       },
-      "required": ["email", "source"]
+      "required": ["id", "name", "price"]
     },
-    "customer": {
-      "title": "Customer",
-      "description": "Official customer record for CRM and support.",
+    "Purchase": {
+      "title": "Acquisition Record",
+      "description": "Record of a successfully acquired asset",
       "type": "object",
       "properties": {
-        "email": { "type": "string", "format": "email" },
-        "orderCount": { "type": "number" },
-        "totalSpent": { "type": "number" },
-        "lastActive": { "type": "string", "format": "date-time" }
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["completed", "pending", "failed"] },
+        "amount": { "type": "number" }
+      },
+      "required": ["userId", "productId"]
+    },
+    "ReadingListItem": {
+      "title": "Saved Resource",
+      "description": "A bookmarked article or asset for later consumption",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "resourceId": { "type": "string" },
+        "resourceType": { "type": "string", "enum": ["article", "product"] },
+        "savedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "resourceId"]
+    },
+    "NewsletterSubscriber": {
+      "title": "Newsletter Lead",
+      "description": "Email subscriber to the Architech Intel stream",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "subscribedAt": { "type": "string", "format": "date-time" },
+        "source": { "type": "string" }
       },
       "required": ["email"]
     },
-    "blogPost": {
-      "title": "Blog Post",
-      "description": "A published article in the Architech Journal.",
+    "AgentReport": {
+      "title": "Platform Discourse",
+      "description": "AI-generated branded intelligence reports",
       "type": "object",
       "properties": {
+        "id": { "type": "string" },
         "title": { "type": "string" },
-        "excerpt": { "type": "string" },
         "content": { "type": "string" },
-        "category": { "type": "string" },
-        "level": { "type": "string" },
-        "author": { "type": "string" },
-        "date": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "summary": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "approved", "published"] },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "sourceUrl": { "type": "string" },
+        "strategicReport": { "type": "string" },
+        "blogVersion": { "type": "string" },
+        "socialAssets": { "type": "string" }
       },
       "required": ["title", "content"]
     },
-    "asset": {
-      "title": "Vault Asset",
-      "description": "A digital product available in the shop.",
+    "AdminCommand": {
+      "title": "Strategic Command",
+      "description": "Natural language command to the platform agent",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "price": { "type": "number" },
-        "category": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "userId": { "type": "string" },
+        "command": { "type": "string" },
+        "response": { "type": "string" },
+        "status": { "type": "string", "enum": ["executing", "completed", "failed"] },
+        "timestamp": { "type": "string", "format": "date-time" }
       },
-      "required": ["name", "price"]
+      "required": ["command", "timestamp"]
     }
   },
   "firestore": {
-    "/orders/{orderId}": {
-      "schema": "order",
-      "description": "Collection of orders."
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Core user metadata"
     },
-    "/leads/{leadId}": {
-      "schema": "lead",
-      "description": "CRM leads."
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Vault asset catalog"
     },
-    "/customers/{customerId}": {
-      "schema": "customer",
-      "description": "Customer profiles."
+    "/purchases/{purchaseId}": {
+      "schema": "Purchase",
+      "description": "Transactional records"
     },
-    "/blog/{postId}": {
-      "schema": "blogPost",
-      "description": "Journal articles."
+    "/reading_lists/{itemId}": {
+      "schema": "ReadingListItem",
+      "description": "Saved assets and articles"
     },
-    "/assets/{assetId}": {
-      "schema": "asset",
-      "description": "Catalog of digital products."
+    "/newsletter/{email}": {
+      "schema": "NewsletterSubscriber",
+      "description": "Architech network directory"
+    },
+    "/agent_reports/{reportId}": {
+      "schema": "AgentReport",
+      "description": "Platform management agent outputs"
+    },
+    "/admin_commands/{commandId}": {
+      "schema": "AdminCommand",
+      "description": "Operational command history"
+    },
+    "/fulfillment_logs/{logId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "email": { "type": "string" },
+          "productId": { "type": "string" },
+          "type": { "type": "string" },
+          "message": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "email", "productId", "type", "message", "timestamp"]
+      },
+      "description": "Historical log of asset distributions and user communications."
     }
   }
 }

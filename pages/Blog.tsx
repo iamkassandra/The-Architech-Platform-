@@ -2,12 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import * as gemini from '../services/geminiService';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandIcon from '../components/BrandIcon';
+import Meta from '../components/Meta';
+import { useAuth } from '../AuthContext';
+import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from '../services/firebase';
 
 const Blog: React.FC = () => {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<any[]>([]);
   const [activePost, setActivePost] = useState<any | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [savedPosts, setSavedPosts] = useState<string[]>([]);
 
   useEffect(() => {
      const fetchPosts = async () => {
@@ -29,6 +35,47 @@ const Blog: React.FC = () => {
      };
      fetchPosts();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchSaved = async () => {
+        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceType', '==', 'article'));
+        const snapshot = await getDocs(q);
+        setSavedPosts(snapshot.docs.map(doc => doc.data().resourceId));
+      };
+      fetchSaved();
+    }
+  }, [user]);
+
+  const handleSavePost = async (post: any) => {
+    if (!user) return alert("Identity verification required to save resources.");
+    
+    if (savedPosts.includes(post.id)) {
+      // Unsave
+      try {
+        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceId', '==', post.id));
+        const snapshot = await getDocs(q);
+        snapshot.forEach(async (d) => await deleteDoc(d.ref));
+        setSavedPosts(prev => prev.filter(id => id !== post.id));
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      // Save
+      try {
+        await addDoc(collection(db, 'reading_lists'), {
+          userId: user.uid,
+          resourceId: post.id,
+          resourceType: 'article',
+          resourceTitle: post.title,
+          savedAt: serverTimestamp()
+        });
+        setSavedPosts(prev => [...prev, post.id]);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   const handlePlayExcerpt = async (text: string) => {
     setAudioLoading(true);
@@ -53,7 +100,7 @@ const Blog: React.FC = () => {
   if (loading) {
      return (
         <div className="pt-48 flex flex-col items-center justify-center gap-6">
-           <div className="w-12 h-12 border-2 border-red border-t-transparent animate-spin"></div>
+           <BrandIcon className="w-16 h-16 animate-bounce" />
            <p className="text-[10px] font-black text-red tracking-widest uppercase animate-pulse">Initializing Intelligence Database...</p>
         </div>
      );
@@ -99,6 +146,10 @@ const Blog: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-24">
+      <Meta 
+        title="THE JOURNAL | Strategic Intelligence"
+        description="Daily dispatches from the bleeding edge of AI orchestration and enterprise strategy."
+      />
       <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-32">
         <div className="space-y-6">
           <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase uppercase border-l-2 border-red pl-4">Protocol: Editorial</span>
@@ -132,17 +183,27 @@ const Blog: React.FC = () => {
             </div>
             <div className="md:col-span-3 flex flex-col justify-between items-end">
                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{post.date}</span>
-               <button 
-                disabled={audioLoading}
-                onClick={(e) => { e.stopPropagation(); handlePlayExcerpt(post.excerpt); }}
-                className={`w-12 h-12 border border-white/10 flex items-center justify-center hover:bg-red hover:text-black hover:border-red transition-all ${audioLoading ? 'animate-pulse' : ''}`}
-               >
-                 {audioLoading ? (
-                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                 ) : (
-                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                 )}
-               </button>
+               <div className="flex gap-4">
+                 <button 
+                  onClick={(e) => { e.stopPropagation(); handleSavePost(post); }}
+                  className={`w-12 h-12 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all ${savedPosts.includes(post.id) ? 'bg-white text-black' : ''}`}
+                 >
+                   <svg className="w-5 h-5" fill={savedPosts.includes(post.id) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                   </svg>
+                 </button>
+                 <button 
+                  disabled={audioLoading}
+                  onClick={(e) => { e.stopPropagation(); handlePlayExcerpt(post.excerpt); }}
+                  className={`w-12 h-12 border border-white/10 flex items-center justify-center hover:bg-red hover:text-black hover:border-red transition-all ${audioLoading ? 'animate-pulse' : ''}`}
+                 >
+                   {audioLoading ? (
+                     <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                   ) : (
+                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                   )}
+                 </button>
+               </div>
             </div>
           </article>
         ))}

@@ -1,15 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { AppRoute, DigitalProduct } from '../types';
-import { recordPurchase, getUser } from '../services/storageService';
+import { recordPurchase } from '../services/storageService';
+import { useAuth } from '../AuthContext';
+import { db, collection, addDoc, serverTimestamp } from '../services/firebase';
 
 type PaymentStatus = 'idle' | 'verifying' | 'authorizing' | 'securing' | 'success' | 'failed';
 
 const Checkout: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) => {
+  const { user } = useAuth();
   const [status, setStatus] = useState<PaymentStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState(getUser()?.email || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [product, setProduct] = useState<DigitalProduct | null>(null);
+
+  useEffect(() => {
+    if (user?.email) setEmail(user.email);
+  }, [user]);
 
   useEffect(() => {
     const cartItem = localStorage.getItem('ARCHITECH_CHECKOUT_ITEM');
@@ -28,24 +35,32 @@ const Checkout: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate 
     if (!product) return;
 
     setStatus('verifying');
-    await new Promise(r => setTimeout(r, 1500));
-    setStatus('authorizing');
-    await new Promise(r => setTimeout(r, 2000));
     
-    if (Math.random() < 0.02) { // 2% failure for "realism"
-      setStatus('failed');
-      setError('Protocol error: Bank node synchronization failed.');
-      return;
-    }
+    try {
+      const response = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          productName: product.name,
+          price: product.price,
+          email,
+          userId: user?.uid
+        })
+      });
 
-    setStatus('securing');
-    await new Promise(r => setTimeout(r, 1200));
-    
-    // Finalize Persistent Record
-    recordPurchase(product.id, email); 
-    
-    setStatus('success');
-    setTimeout(() => navigate(AppRoute.SUCCESS), 1200);
+      const session = await response.json();
+      
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error("Financial orchestration failure");
+      }
+    } catch (err: any) {
+      console.error("Checkout failure:", err);
+      setStatus('failed');
+      setError(err.message || "Financial orchestration synchronization failed.");
+    }
   };
 
   if (!product) return null;
@@ -123,20 +138,20 @@ const Checkout: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate 
                         placeholder="IDENTITY@ARCHITECH.COM" 
                         className="w-full px-0 py-6 border-b border-neutral-100 focus:border-black focus:outline-none transition-all text-3xl font-black tracking-tighter placeholder:text-neutral-100 uppercase" 
                       />
-                      {error && <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">{error}</p>}
+                      {error && <p className="text-[10px] font-black text-red uppercase tracking-widest">{error}</p>}
                    </div>
-                   <div className="space-y-8">
-                      <label className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-400">2. Authorize Transfer [Card Node]</label>
-                      <div className="grid grid-cols-2 gap-12">
-                         <div className="col-span-2 relative">
-                            <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="w-full px-0 py-6 border-b border-neutral-100 focus:border-black focus:outline-none transition-all text-3xl font-black tracking-tighter placeholder:text-neutral-100" />
-                            <div className="absolute right-0 bottom-6 flex gap-2">
-                               <div className="w-8 h-5 bg-neutral-100 rounded-sm"></div>
-                               <div className="w-8 h-5 bg-neutral-100 rounded-sm"></div>
+                   <div className="space-y-8 p-12 border border-neutral-100 rounded-[3rem] bg-neutral-50/50">
+                      <label className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-400">2. Authorize Transfer [Stripe Protocol]</label>
+                      <div className="space-y-6">
+                         <p className="text-sm font-bold text-neutral-500 leading-relaxed uppercase">You will be redirected to the secure Stripe merchant node to finalize your asset acquisition.</p>
+                         <div className="flex gap-4">
+                            <div className="px-4 py-2 bg-white rounded-lg shadow-sm border border-neutral-100">
+                               <span className="text-[10px] font-black tracking-widest uppercase">Stripe</span>
+                            </div>
+                            <div className="px-4 py-2 bg-white rounded-lg shadow-sm border border-neutral-100">
+                               <span className="text-[10px] font-black tracking-widest uppercase">Secured</span>
                             </div>
                          </div>
-                         <input type="text" placeholder="MM/YY" className="w-full px-0 py-6 border-b border-neutral-100 focus:border-black focus:outline-none transition-all text-3xl font-black tracking-tighter placeholder:text-neutral-100" />
-                         <input type="text" placeholder="CVC" className="w-full px-0 py-6 border-b border-neutral-100 focus:border-black focus:outline-none transition-all text-3xl font-black tracking-tighter placeholder:text-neutral-100" />
                       </div>
                    </div>
                 </div>
