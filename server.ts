@@ -8,11 +8,21 @@ import { Storage } from "@google-cloud/storage";
 import admin from "firebase-admin";
 import axios from "axios";
 import Stripe from "stripe";
-import { managePlatform } from "./services/adminAgentService.js";
+import { managePlatform } from "./services/adminAgentService.ts";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-01-27.acacia" as any,
-});
+let stripeInstance: Stripe | null = null;
+function getStripe() {
+  if (!stripeInstance) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+      console.warn("STRIPE_SECRET_KEY is missing. Stripe functionality will be limited.");
+    }
+    stripeInstance = new Stripe(key || "sk_test_dummy", {
+      apiVersion: "2025-01-27.acacia" as any,
+    });
+  }
+  return stripeInstance;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +45,7 @@ async function startServer() {
   app.post("/api/checkout/create-session", async (req, res) => {
     try {
       const { productId, productName, price, email, userId } = req.body;
-      
+      const stripe = getStripe();
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         customer_email: email,
@@ -72,10 +82,11 @@ async function startServer() {
   // THE AUDITOR: Stripe Webhook
   app.post("/api/webhooks/stripe", express.raw({type: 'application/json'}), async (req, res) => {
     const sig = req.headers['stripe-signature'];
+    const stripe = getStripe();
     let event;
 
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig || "", process.env.STRIPE_WEBHOOK_SECRET || "");
+      event = stripe.webhooks.constructEvent(req.body, sig as string || "", process.env.STRIPE_WEBHOOK_SECRET || "");
     } catch (err: any) {
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }

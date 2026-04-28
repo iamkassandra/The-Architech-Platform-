@@ -1,9 +1,26 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { db, collection, addDoc, serverTimestamp, getDocs } from "./firebase";
+import { db, collection, addDoc, serverTimestamp, getDocs } from "./firebase.ts";
 import { Storage } from "@google-cloud/storage";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const storage = new Storage();
+let aiInstance: GoogleGenAI | null = null;
+function getAI() {
+  if (!aiInstance) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      throw new Error("GEMINI_API_KEY is required for orchestrator operations.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey: key });
+  }
+  return aiInstance;
+}
+
+let storageInstance: Storage | null = null;
+function getStorage() {
+  if (!storageInstance) {
+    storageInstance = new Storage();
+  }
+  return storageInstance;
+}
 
 // TOOL DEFINITIONS for Google Ecosystem Management
 const tools = [
@@ -45,6 +62,7 @@ const tools = [
 const toolImplementations = {
   check_storage_nodes: async () => {
     try {
+      const storage = getStorage();
       const [buckets] = await storage.getBuckets();
       return {
         status: "CONNECTED",
@@ -90,6 +108,7 @@ export async function managePlatform(command: string, userId: string) {
     let finalResponse = "";
 
     while (turns < 5) {
+      const ai = getAI();
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: contents,

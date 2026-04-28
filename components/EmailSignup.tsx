@@ -51,7 +51,7 @@ const EmailSignup: React.FC = () => {
             <button 
               type="submit" 
               disabled={status === 'loading'}
-              className="px-12 py-5 bg-[#630A1F] text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-black transition-all shadow-xl disabled:opacity-50"
+              className="px-12 py-5 bg-red text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-black transition-all shadow-xl disabled:opacity-50"
             >
               {status === 'loading' ? 'Syncing...' : 'Authorize'}
             </button>
