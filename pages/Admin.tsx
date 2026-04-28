@@ -173,7 +173,10 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
         <div className="lg:col-span-2 space-y-12">
           {activeTab === 'agent' && (
             <section className="space-y-8">
-              <div className="p-8 bg-neutral-900 border border-white/5 rounded-[2rem] space-y-6">
+              <div className="p-8 bg-[--color-neutral]/40 neo-blur border border-white/10 rounded-[2rem] space-y-6 relative overflow-hidden">
+                {/* Architectural Accent */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red/5 blur-[60px] pointer-events-none" />
+                
                 <div className="flex items-center gap-4">
                   <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
                   <span className="text-[10px] font-black tracking-widest uppercase text-white/60">Management Agent: ONLINE</span>
@@ -224,13 +227,13 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
           {activeTab === 'reports' && (
             <section className="space-y-8">
               {reports.length === 0 ? (
-                <div className="py-48 text-center border border-dashed border-white/10 rounded-[3rem]">
+                <div className="py-48 text-center border border-dashed border-white/10 rounded-[3rem] bg-[--color-black]/50">
                   <p className="text-xs text-white/20 uppercase font-black tracking-widest">No Strategic Intelligence Found</p>
                 </div>
               ) : (
                 <div className="grid gap-8">
                   {reports.map((report) => (
-                    <div key={report.id} className="p-8 bg-neutral-900 border border-white/10 rounded-[3rem] space-y-6">
+                    <div key={report.id} className="p-8 bg-[--color-neutral]/30 neo-blur border border-white/10 rounded-[3rem] space-y-6 hover:border-red/50 transition-all">
                       <div className="flex justify-between items-start">
                         <div className="space-y-2">
                           <span className="text-[10px] text-red font-black tracking-[0.2em] uppercase">Intelligence Draft</span>
@@ -341,7 +344,10 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
             <section className="space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {readiness.map((task) => (
-                  <div key={task.id} className="p-10 bg-neutral-900 border border-white/10 rounded-[4rem] space-y-6 hover:border-red/50 transition-all group">
+                  <div key={task.id} className="p-10 bg-[--color-neutral]/40 neo-blur border border-white/5 rounded-[4rem] space-y-6 hover:border-red/30 transition-all group relative overflow-hidden">
+                    {/* Corner Accent */}
+                    <div className="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10" />
+                    
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                          <span className={`text-[8px] font-black tracking-widest uppercase ${task.status === 'ready' ? 'text-green-500' : 'text-red'}`}>

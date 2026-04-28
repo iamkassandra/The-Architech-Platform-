@@ -69,7 +69,11 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
       </div>
 
       {/* Featured Products / Grid */}
-      <section className="px-6 py-48 grid grid-cols-1 md:grid-cols-3 border-y border-white/5">
+      <section className="px-6 py-48 grid grid-cols-1 md:grid-cols-3 border-y border-white/5 bg-[--color-neutral]/30 relative">
+        {/* Subtle separator weave */}
+        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent hidden md:block" />
+        <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent hidden md:block" />
+        
         {products.map((product) => (
           <div 
             key={product.id} 
@@ -92,8 +96,9 @@ const Home: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
       </section>
 
       {/* Philosophy Section */}
-      <section className="px-6 py-64 bg-white text-black">
-        <div className="max-w-7xl mx-auto">
+      <section className="px-6 py-64 bg-[#E5E5E5] text-black relative">
+        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-[--color-black] to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <span className="text-[10px] font-black tracking-[0.6em] mb-12 block uppercase">AESTHETIC_INTEL</span>
           <h2 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-[0.85] mb-24">
             TO ARCHITECH <br />

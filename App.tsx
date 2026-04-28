@@ -61,15 +61,18 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-black text-white font-mono selection:bg-red selection:text-white overflow-x-hidden brutal-grid">
-      <Navbar 
-        currentRoute={currentRoute} 
-        navigate={navigate} 
-        onToggleBot={() => setIsBotOpen(!isBotOpen)} 
-        isBotOpen={isBotOpen}
-      />
-      
-      <main className="flex-grow pt-24 relative">
+      <div className="min-h-screen flex flex-col bg-[--color-black] text-white font-mono selection:bg-red selection:text-white overflow-x-hidden brutal-grid relative">
+        {/* Elite Ambient Gradient */}
+        <div className="fixed inset-0 pointer-events-none bg-gradient-to-tr from-black via-transparent to-red/5 z-0" />
+        
+        <Navbar 
+          currentRoute={currentRoute} 
+          navigate={navigate} 
+          onToggleBot={() => setIsBotOpen(!isBotOpen)} 
+          isBotOpen={isBotOpen}
+        />
+        
+        <main className="flex-grow pt-24 relative z-10">
         <AnimatePresence mode="wait">
           {isDecrypting ? (
             <motion.div 

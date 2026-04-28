@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { AppRoute } from '../types';
 import BrandIcon from './BrandIcon';
+import { motion } from 'framer-motion';
 
 interface NavbarProps {
   currentRoute: AppRoute;
@@ -21,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[60] bg-black/80 neo-blur border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-[60] bg-[--color-black]/80 neo-blur border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between h-20 items-center">
           {/* Brand */}
@@ -31,16 +32,22 @@ const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, onToggleBot, is
           </div>
           
           {/* Internal Navigation */}
-          <div className="hidden lg:flex space-x-8">
+          <div className="hidden lg:flex space-x-8 h-full">
             {navItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => navigate(item.route)}
-                className={`text-[10px] font-black tracking-widest transition-all hover:text-red ${
+                className={`h-full px-2 text-[10px] font-black tracking-widest transition-all hover:text-red relative group ${
                   currentRoute === item.route ? 'text-red' : 'text-white/40'
                 }`}
               >
                 {item.label}
+                {currentRoute === item.route && (
+                  <motion.div 
+                    layoutId="nav-active"
+                    className="absolute top-0 left-0 right-0 h-0.5 bg-red"
+                  />
+                )}
               </button>
             ))}
           </div>

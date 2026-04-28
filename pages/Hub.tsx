@@ -79,27 +79,33 @@ const Hub: React.FC = () => {
       {/* Sidebar Controls */}
       <div className="lg:col-span-3 space-y-12">
         <div className="space-y-6">
-          <BrandIcon className="w-16 h-16 animate-pulse" />
+          <BrandIcon className="w-20 h-20 group-hover:rotate-12 transition-transform duration-700" />
           <span className="text-red text-[10px] font-black tracking-[0.6em] uppercase border-l-2 border-red pl-4">Management Protocol</span>
           <h1 className="text-6xl font-black tracking-tighter uppercase leading-[0.8] mb-12">Orchestrator</h1>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-3">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full group text-left p-8 border hover:border-red transition-all ${
-                activeTab === tab.id ? 'bg-red text-black border-red' : 'border-white/5 text-white/40'
+              className={`w-full group text-left p-8 border transition-all relative overflow-hidden ${
+                activeTab === tab.id ? 'bg-red text-black border-red' : 'border-white/5 bg-[--color-neutral]/20 text-white/40 hover:border-white/20'
               }`}
             >
+              {activeTab === tab.id && (
+                 <div className="absolute top-0 right-0 p-2 opacity-20">
+                    <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+                 </div>
+              )}
               <p className="text-[10px] font-black tracking-[0.4em] mb-1">{tab.label}</p>
               <p className="text-[8px] opacity-60 font-mono italic">:: {tab.sub}</p>
             </button>
           ))}
         </nav>
 
-        <div className="p-8 border border-white/5 space-y-8">
+        <div className="p-8 border border-white/10 bg-[--color-neutral]/30 space-y-8 relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/40">
               <span>Cloud_Resources</span>
               <span className="text-red">Online</span>
@@ -124,7 +130,10 @@ const Hub: React.FC = () => {
       </div>
 
       {/* Main Terminal Area */}
-      <div className="lg:col-span-9 border border-white/5 shadow-2xl min-h-[800px] bg-white/1">
+      <div className="lg:col-span-9 border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] min-h-[800px] bg-[--color-neutral]/40 neo-blur relative overflow-hidden">
+        {/* Ambient background weave */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(149,0,0,0.03),transparent)] pointer-events-none" />
+        
         {activeTab === 'oracle' && (
           <div className="h-full flex flex-col">
             <header className="p-12 border-b border-white/5 flex justify-between items-center">

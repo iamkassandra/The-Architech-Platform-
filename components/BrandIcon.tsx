@@ -24,8 +24,8 @@ const BrandIcon: React.FC<BrandIconProps> = ({
       </defs>
       
       {/* Background Red for Eyes */}
-      <circle cx="38" cy="48" r="8" fill="#660000" style={{ fill: 'var(--color-red)' }} />
-      <circle cx="62" cy="48" r="8" fill="#660000" style={{ fill: 'var(--color-red)' }} />
+      <circle cx="38" cy="48" r="8" fill="#950000" style={{ fill: 'var(--color-red)' }} />
+      <circle cx="62" cy="48" r="8" fill="#950000" style={{ fill: 'var(--color-red)' }} />
 
       {/* Ghost Body with Masked Eyes - Added additional curve at bottom */}
       <path
