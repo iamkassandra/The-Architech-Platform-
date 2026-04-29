@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import BrandIcon from '../components/BrandIcon';
 import Meta from '../components/Meta';
 import { useAuth } from '../AuthContext';
-import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from '../services/firebase';
+import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, handleFirestoreError, OperationType } from '../services/firebase';
 
 const Blog: React.FC = () => {
   const { user } = useAuth();
@@ -39,9 +39,14 @@ const Blog: React.FC = () => {
   useEffect(() => {
     if (user) {
       const fetchSaved = async () => {
-        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceType', '==', 'article'));
-        const snapshot = await getDocs(q);
-        setSavedPosts(snapshot.docs.map(doc => doc.data().resourceId));
+        const path = 'reading_lists';
+        try {
+          const q = query(collection(db, path), where('userId', '==', user.uid), where('resourceType', '==', 'article'));
+          const snapshot = await getDocs(q);
+          setSavedPosts(snapshot.docs.map(doc => doc.data().resourceId));
+        } catch (err) {
+          handleFirestoreError(err, OperationType.LIST, path);
+        }
       };
       fetchSaved();
     }
@@ -52,18 +57,22 @@ const Blog: React.FC = () => {
     
     if (savedPosts.includes(post.id)) {
       // Unsave
+      const path = 'reading_lists';
       try {
-        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceId', '==', post.id));
+        const q = query(collection(db, path), where('userId', '==', user.uid), where('resourceId', '==', post.id));
         const snapshot = await getDocs(q);
-        snapshot.forEach(async (d) => await deleteDoc(d.ref));
+        for (const d of snapshot.docs) {
+          await deleteDoc(d.ref).catch(err => handleFirestoreError(err, OperationType.DELETE, `${path}/${d.id}`));
+        }
         setSavedPosts(prev => prev.filter(id => id !== post.id));
       } catch (err) {
         console.error(err);
       }
     } else {
       // Save
+      const path = 'reading_lists';
       try {
-        await addDoc(collection(db, 'reading_lists'), {
+        await addDoc(collection(db, path), {
           userId: user.uid,
           resourceId: post.id,
           resourceType: 'article',
@@ -72,7 +81,7 @@ const Blog: React.FC = () => {
         });
         setSavedPosts(prev => [...prev, post.id]);
       } catch (err) {
-        console.error(err);
+        handleFirestoreError(err, OperationType.CREATE, path);
       }
     }
   };

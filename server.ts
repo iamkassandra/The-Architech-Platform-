@@ -136,7 +136,20 @@ async function startServer() {
       
       // Verification: Check if user is admin
       const adminDoc = await db.collection("admins").doc(userId).get();
-      if (!adminDoc.exists) return res.status(403).json({ error: "Access Denied" });
+      let isVerifiedAdmin = adminDoc.exists;
+      
+      if (!isVerifiedAdmin) {
+        try {
+          const userRecord = await admin.auth().getUser(userId);
+          if (userRecord.email === "theaucklandassistant@gmail.com" && userRecord.emailVerified) {
+            isVerifiedAdmin = true;
+          }
+        } catch (e) {
+          console.error("Admin verification lookup failure:", e);
+        }
+      }
+
+      if (!isVerifiedAdmin) return res.status(403).json({ error: "Access Denied" });
 
       // Record standard command
       const commandRef = await db.collection("admin_commands").add({

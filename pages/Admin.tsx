@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppRoute } from '../types';
 import BrandIcon from '../components/BrandIcon';
 import { useAuth } from '../AuthContext';
-import { db, collection, query, orderBy, getDocs, addDoc, serverTimestamp, updateDoc, doc, onSnapshot, where } from '../services/firebase';
+import { db, collection, query, orderBy, getDocs, addDoc, serverTimestamp, updateDoc, doc, onSnapshot, where, handleFirestoreError, OperationType } from '../services/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
@@ -52,12 +52,18 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
     }
 
     const checkAdmin = async () => {
-      const adminQuery = query(collection(db, 'admins'), where('__name__', '==', user.uid));
-      const adminSnap = await getDocs(adminQuery);
-      if (adminSnap.empty) {
+      try {
+        const adminQuery = query(collection(db, 'admins'), where('__name__', '==', user.uid));
+        const adminSnap = await getDocs(adminQuery);
+        if (adminSnap.empty) {
+          setIsAdmin(false);
+        } else {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        // If it's a permission error during admin check, we just assume not admin
+        console.warn("Admin check restricted:", error);
         setIsAdmin(false);
-      } else {
-        setIsAdmin(true);
       }
     };
 
@@ -70,10 +76,14 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
 
     const unsubReports = onSnapshot(query(collection(db, 'agent_reports'), orderBy('generatedAt', 'desc')), (snap) => {
       setReports(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'agent_reports');
     });
 
     const unsubLogs = onSnapshot(query(collection(db, 'admin_commands'), orderBy('timestamp', 'desc')), (snap) => {
       setLogs(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'admin_commands');
     });
 
     return () => {
@@ -110,8 +120,9 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
         const report = reports.find(r => r.id === reportId);
         if (!report) return;
 
+        const blogPath = 'blog';
         // Add to Blog
-        await addDoc(collection(db, 'blog'), {
+        await addDoc(collection(db, blogPath), {
             title: report.title,
             excerpt: report.summary,
             content: report.content,
@@ -120,12 +131,13 @@ const Admin: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
             author: 'ARCHITECH_AGENT',
             date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase(),
             createdAt: serverTimestamp()
-        });
+        }).catch(err => handleFirestoreError(err, OperationType.WRITE, blogPath));
 
+        const reportPath = `agent_reports/${reportId}`;
         // Update Report Status
         await updateDoc(doc(db, 'agent_reports', reportId), {
             status: 'published'
-        });
+        }).catch(err => handleFirestoreError(err, OperationType.WRITE, reportPath));
     } catch (err) {
         console.error("Publication failure:", err);
     }

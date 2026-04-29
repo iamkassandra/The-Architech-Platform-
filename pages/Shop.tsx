@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import BrandIcon from '../components/BrandIcon';
 import Meta from '../components/Meta';
 import { useAuth } from '../AuthContext';
-import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from '../services/firebase';
+import { db, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, handleFirestoreError, OperationType } from '../services/firebase';
 
 export const PRODUCTS: DigitalProduct[] = [
   { 
@@ -47,9 +47,14 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
   useEffect(() => {
     if (user) {
       const fetchWishlist = async () => {
-        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceType', '==', 'product'));
-        const snapshot = await getDocs(q);
-        setWishlist(snapshot.docs.map(doc => doc.data().resourceId));
+        const path = 'reading_lists';
+        try {
+          const q = query(collection(db, path), where('userId', '==', user.uid), where('resourceType', '==', 'product'));
+          const snapshot = await getDocs(q);
+          setWishlist(snapshot.docs.map(doc => doc.data().resourceId));
+        } catch (err) {
+          handleFirestoreError(err, OperationType.LIST, path);
+        }
       };
       fetchWishlist();
     }
@@ -59,15 +64,19 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
     if (!user) return alert("Identity verification required.");
     
     if (wishlist.includes(product.id)) {
+      const path = 'reading_lists';
       try {
-        const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid), where('resourceId', '==', product.id));
+        const q = query(collection(db, path), where('userId', '==', user.uid), where('resourceId', '==', product.id));
         const snapshot = await getDocs(q);
-        snapshot.forEach(async (d) => await deleteDoc(d.ref));
+        for (const d of snapshot.docs) {
+          await deleteDoc(d.ref).catch(err => handleFirestoreError(err, OperationType.DELETE, `${path}/${d.id}`));
+        }
         setWishlist(prev => prev.filter(id => id !== product.id));
       } catch (err) { console.error(err); }
     } else {
+      const path = 'reading_lists';
       try {
-        await addDoc(collection(db, 'reading_lists'), {
+        await addDoc(collection(db, path), {
           userId: user.uid,
           resourceId: product.id,
           resourceType: 'product',
@@ -75,7 +84,7 @@ const Shop: React.FC<{ navigate: (route: AppRoute) => void }> = ({ navigate }) =
           savedAt: serverTimestamp()
         });
         setWishlist(prev => [...prev, product.id]);
-      } catch (err) { console.error(err); }
+      } catch (err) { handleFirestoreError(err, OperationType.CREATE, path); }
     }
   };
 

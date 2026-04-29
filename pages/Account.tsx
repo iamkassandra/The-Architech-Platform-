@@ -4,7 +4,7 @@ import { AppRoute } from '../types';
 import BrandIcon from '../components/BrandIcon';
 import Meta from '../components/Meta';
 import { useAuth } from '../AuthContext';
-import { db, collection, query, where, getDocs, deleteDoc, doc } from '../services/firebase';
+import { db, collection, query, where, getDocs, deleteDoc, doc, handleFirestoreError, OperationType } from '../services/firebase';
 
 const Account: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) => {
   const { user, loading, signIn, signOut } = useAuth();
@@ -15,12 +15,13 @@ const Account: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) =>
     if (user) {
       const fetchSaved = async () => {
         setItemsLoading(true);
+        const path = 'reading_lists';
         try {
-          const q = query(collection(db, 'reading_lists'), where('userId', '==', user.uid));
+          const q = query(collection(db, path), where('userId', '==', user.uid));
           const snapshot = await getDocs(q);
           setSavedItems(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (err) {
-          console.error(err);
+          handleFirestoreError(err, OperationType.LIST, path);
         } finally {
           setItemsLoading(false);
         }
@@ -30,12 +31,13 @@ const Account: React.FC<{ navigate: (r: AppRoute) => void }> = ({ navigate }) =>
   }, [user]);
 
   const removeSavedItem = async (itemId: string) => {
+    const path = `reading_lists/${itemId}`;
     try {
       const d = doc(db, 'reading_lists', itemId);
       await deleteDoc(d);
       setSavedItems(prev => prev.filter(i => i.id !== itemId));
     } catch (err) {
-      console.error(err);
+      handleFirestoreError(err, OperationType.DELETE, path);
     }
   };
 
